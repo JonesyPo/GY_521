@@ -2,6 +2,7 @@
 #include <Wire.h>
 
 int SLV_ADDR = 0x68;
+uint8_t AFS_SEL = 0x1C;
 
 class GY_521 {
   private:
@@ -11,13 +12,13 @@ class GY_521 {
     
    public:
     void get_accData();
-    //void self_selfTestAcc();
+    void selfTestAcc();
     void writeToReg();
 };
 
 GY_521 reading;
 
-void writeToReg(uint8_t reg, uint8_t val)
+void writeReg(uint8_t reg, uint8_t val)
 {
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(reg);
@@ -30,7 +31,7 @@ void writeToReg(uint8_t reg, uint8_t val)
   Serial.println(" ");
 }
 
-void readReg(uint8_t reg)
+uint8_t readReg(uint8_t reg)
 {
   uint8_t tempReadVal = 0;
   Wire.beginTransmission(SLV_ADDR);
@@ -41,19 +42,35 @@ void readReg(uint8_t reg)
   Serial.print("Value at register ");
   Serial.print(reg, HEX);
   Serial.print(" = ");
-   Serial.print(tempReadVal, HEX);
+  Serial.print(tempReadVal, HEX);
   Serial.println(" ");
   Wire.endTransmission(true);
+  return tempReadVal;
 }
 
 
-/*void GY_521::selfTestAcc()
+void GY_521::selfTestAcc()
 {
   //set full-scale range to +-8g/+-1000 deg/s
-  
+  // Read AFS_SEL register and se tval to 8g =2 if not set
+  uint8_t tempVal;
+  tempVal = readReg(AFS_SEL);
+  if(tempVal != 0x2)
+  {
+    writeReg(AFS_SEL, 0x2);
+  }
+
+  //Self Test here
+
+
+  // Set back to full 250 deg/sec
+  if(tempVal == 0x2)
+  {
+    writeReg(AFS_SEL, 0x0);
+  }
   
 }
-*/
+
 void GY_521::get_accData()
 {
   GY_521 temp;
@@ -84,6 +101,8 @@ void setup() {
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(0x6B);
   Wire.write(0);
+
+  reading.selfTestAcc();
   Wire.endTransmission(true);
 }
 
