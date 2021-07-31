@@ -2,7 +2,7 @@
 #include <Wire.h>
 
 int SLV_ADDR = 0x68;
-uint8_t AFS_SEL = 0x1C;
+uint8_t ACCEL_CONFIG = 0x1C;
 
 class GY_521 {
   private:
@@ -12,7 +12,6 @@ class GY_521 {
     
    public:
     void get_accData();
-    void selfTestAcc();
     void writeToReg();
 };
 
@@ -49,26 +48,22 @@ uint8_t readReg(uint8_t reg)
 }
 
 
-void GY_521::selfTestAcc()
+void selfTestAcc()
 {
   //set full-scale range to +-8g/+-1000 deg/s
-  // Read AFS_SEL register and se tval to 8g =2 if not set
   uint8_t tempVal;
-  tempVal = readReg(AFS_SEL);
-  if(tempVal != 0x2)
-  {
-    writeReg(AFS_SEL, 0x2);
-  }
-
-  //Self Test here
+  tempVal = readReg(ACCEL_CONFIG);
+  tempVal = tempVal |= 0x10;
+  writeReg(ACCEL_CONFIG, tempVal);
 
 
-  // Set back to full 250 deg/sec
-  if(tempVal == 0x2)
-  {
-    writeReg(AFS_SEL, 0x0);
-  }
-  
+  // Do test here
+
+
+  // Return to default setting
+  tempVal = readReg(ACCEL_CONFIG);
+  tempVal &= 0xE7;
+  writeReg(ACCEL_CONFIG, tempVal);
 }
 
 void GY_521::get_accData()
@@ -101,9 +96,8 @@ void setup() {
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(0x6B);
   Wire.write(0);
-
-  reading.selfTestAcc();
   Wire.endTransmission(true);
+  selfTestAcc();
 }
 
 void loop() {
