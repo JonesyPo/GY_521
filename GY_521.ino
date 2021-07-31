@@ -3,20 +3,60 @@
 
 int SLV_ADDR = 0x68;
 
-class SensorData {
+class GY_521 {
   private:
     int16_t xData;
     int16_t yData;
     int16_t zData;
+    
    public:
     void get_accData();
+    //void self_selfTestAcc();
+    void writeToReg();
 };
 
-SensorData reading;
+GY_521 reading;
 
-void SensorData::get_accData()
+void writeToReg(uint8_t reg, uint8_t val)
 {
-  SensorData temp;
+  Wire.beginTransmission(SLV_ADDR);
+  Wire.write(reg);
+  Wire.write(val);
+  Wire.endTransmission(true);
+  Serial.print("Wrote ");
+  Serial.print(val, HEX);
+  Serial.print(" to register ");
+  Serial.print(reg, HEX);
+  Serial.println(" ");
+}
+
+void readReg(uint8_t reg)
+{
+  uint8_t tempReadVal = 0;
+  Wire.beginTransmission(SLV_ADDR);
+  Wire.write(reg);
+  Wire.endTransmission(false);
+  Wire.requestFrom(SLV_ADDR, 1, true);
+  tempReadVal = Wire.read();
+  Serial.print("Value at register ");
+  Serial.print(reg, HEX);
+  Serial.print(" = ");
+   Serial.print(tempReadVal, HEX);
+  Serial.println(" ");
+  Wire.endTransmission(true);
+}
+
+
+/*void GY_521::selfTestAcc()
+{
+  //set full-scale range to +-8g/+-1000 deg/s
+  
+  
+}
+*/
+void GY_521::get_accData()
+{
+  GY_521 temp;
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(0x3B); // X high bytes
   Wire.endTransmission(false);
@@ -24,7 +64,7 @@ void SensorData::get_accData()
   temp.xData = Wire.read() <<8 | Wire.read();  
   temp.yData = Wire.read() <<8 | Wire.read();
   temp.zData = Wire.read() <<8 | Wire.read();
-  Serial.print("x =");
+  Serial.print("x = ");
   Serial.print(temp.xData);
   Serial.print(",   y = ");
   Serial.print(temp.yData);
