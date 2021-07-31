@@ -11,8 +11,9 @@ class GY_521 {
     int16_t zData;
     
    public:
-    void get_accData();
+    GY_521 get_accData();
     void writeToReg();
+    void selfTestAcc();
 };
 
 GY_521 reading;
@@ -48,25 +49,43 @@ uint8_t readReg(uint8_t reg)
 }
 
 
-void selfTestAcc()
+void GY_521::selfTestAcc()
 {
-  //set full-scale range to +-8g/+-1000 deg/s
+
   uint8_t tempVal;
+  uint8_t value1;
+  uint8_t valueMixed;
   tempVal = readReg(ACCEL_CONFIG);
-  tempVal = tempVal |= 0x10;
+  
+  // Enable Self Test bits: XA_ST=1, YA_ST =1, ZA_ST= 1
+  // Set to 8g+-: AFS_SEL = 0x10
+  tempVal = tempVal |= 0xF0;
   writeReg(ACCEL_CONFIG, tempVal);
+  
+  // Read Self test X register
+  value1 = readReg(0xD);
+  // Read Self Test A register
+  valueMixed = readReg(0x10);
 
-
-  // Do test here
+  // Combine [4-0] from test X reg with [0
+  //Get bits 0-4
+  value1 >>= 3;
+  //combine with bits from XA_TEST
+  value1 |= valueMixed & 0x30;
+    
+  Serial.print("value 1 calibrated = ");
+  Serial.print(value1);
+  Serial.println(" ");
 
 
   // Return to default setting
   tempVal = readReg(ACCEL_CONFIG);
-  tempVal &= 0xE7;
+  tempVal =0;
   writeReg(ACCEL_CONFIG, tempVal);
+ 
 }
 
-void GY_521::get_accData()
+GY_521 GY_521::get_accData()
 {
   GY_521 temp;
   Wire.beginTransmission(SLV_ADDR);
@@ -84,7 +103,7 @@ void GY_521::get_accData()
   Serial.print(temp.zData);
   Serial.println(" ");
   delay(1000);
-  
+  return temp;
 }
 
 void setup() {
@@ -97,7 +116,7 @@ void setup() {
   Wire.write(0x6B);
   Wire.write(0);
   Wire.endTransmission(true);
-  selfTestAcc();
+  reading.selfTestAcc();
 }
 
 void loop() {
