@@ -1,13 +1,13 @@
 #include "521.h"
 #include <Wire.h>
 
-
 GY_521 reading;
 
 void setup() {
   Serial.begin(115200);
   delay(2000);
-  
+
+  pinMode(ledRed, OUTPUT);
   //Joining I2C bus as master so no address is passed in
   Wire.begin();  
   Wire.beginTransmission(0X68);

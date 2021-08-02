@@ -5,6 +5,10 @@
 int SLV_ADDR = 0x68;
 uint8_t ACCEL_CONFIG = 0x1C;
 
+int ledRed = 6;
+int ledBlue = 5;
+int ledGreen = 3;
+
 
 void writeReg(uint8_t reg, uint8_t val)
 {
@@ -21,6 +25,7 @@ void writeReg(uint8_t reg, uint8_t val)
 
 void GY_521::print_accData(GY_521 &data)
 {
+
   Serial.print("x = ");
   Serial.print(data.xData);
   Serial.print(",   y = ");
@@ -28,6 +33,21 @@ void GY_521::print_accData(GY_521 &data)
   Serial.print(",   z =  "); 
   Serial.print(data.zData);
   Serial.println(" ");
+
+  if(data.xData > 10000)
+    analogWrite(ledRed, 100);
+  else
+    analogWrite(ledRed, 0);
+
+  if(data.yData >10000)
+    analogWrite(ledBlue, 100);
+  else
+    analogWrite(ledBlue, 0);
+
+  if(data.zData >10000)
+    analogWrite(ledGreen, 100);
+  else
+    analogWrite(ledGreen, 0);
 }
 
 uint8_t readReg(uint8_t reg)
@@ -99,6 +119,6 @@ GY_521 GY_521::get_accData(GY_521& temp)
   temp.xData = Wire.read() <<8 | Wire.read();  
   temp.yData = Wire.read() <<8 | Wire.read();
   temp.zData = Wire.read() <<8 | Wire.read();
-  delay(1000);
+  delay(500);
   return temp;
 }
