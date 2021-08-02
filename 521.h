@@ -7,7 +7,8 @@ class GY_521 {
     int16_t zData;
     
    public:
-    GY_521 get_accData();
+    GY_521 get_accData(GY_521& temp);
+    void print_accData(GY_521& data);
     void writeToReg();
     void selfTestAcc();
 };
@@ -17,8 +18,3 @@ void writeReg(uint8_t reg, uint8_t val);
 
 
 uint8_t readReg(uint8_t reg);
-
-
-
-
-

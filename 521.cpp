@@ -19,6 +19,20 @@ void writeReg(uint8_t reg, uint8_t val)
   Serial.println(" ");
 }
 
+void GY_521::print_accData(GY_521& data)
+{
+
+  Serial.print("x = ");
+  Serial.print(data.xData);
+  Serial.print(",   y = ");
+  Serial.print(data.yData);
+  Serial.print(",   z =  "); 
+  Serial.print(data.zData);
+  Serial.println(" ");
+
+      
+}
+
 uint8_t readReg(uint8_t reg)
 {
   uint8_t tempReadVal = 0;
@@ -73,9 +87,9 @@ void GY_521::selfTestAcc()
  
 }
 
-GY_521 GY_521::get_accData()
+GY_521 GY_521::get_accData(GY_521& temp)
 {
-  GY_521 temp;
+   temp;
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(0x3B); // X high bytes
   Wire.endTransmission(false);
@@ -83,13 +97,6 @@ GY_521 GY_521::get_accData()
   temp.xData = Wire.read() <<8 | Wire.read();  
   temp.yData = Wire.read() <<8 | Wire.read();
   temp.zData = Wire.read() <<8 | Wire.read();
-  Serial.print("x = ");
-  Serial.print(temp.xData);
-  Serial.print(",   y = ");
-  Serial.print(temp.yData);
-  Serial.print(",   z =  "); 
-  Serial.print(temp.zData);
-  Serial.println(" ");
   delay(1000);
   return temp;
 }
