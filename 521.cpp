@@ -19,9 +19,8 @@ void writeReg(uint8_t reg, uint8_t val)
   Serial.println(" ");
 }
 
-void GY_521::print_accData(GY_521& data)
+void GY_521::print_accData(GY_521 &data)
 {
-
   Serial.print("x = ");
   Serial.print(data.xData);
   Serial.print(",   y = ");
@@ -29,8 +28,6 @@ void GY_521::print_accData(GY_521& data)
   Serial.print(",   z =  "); 
   Serial.print(data.zData);
   Serial.println(" ");
-
-      
 }
 
 uint8_t readReg(uint8_t reg)
@@ -57,6 +54,7 @@ void GY_521::selfTestAcc()
   uint8_t tempVal;
   uint8_t value1;
   uint8_t valueMixed;
+  float trimX = 0;
   tempVal = readReg(ACCEL_CONFIG);
   
   // Enable Self Test bits: XA_ST=1, YA_ST =1, ZA_ST= 1
@@ -74,12 +72,16 @@ void GY_521::selfTestAcc()
   value1 >>= 3;
   //combine with bits from XA_TEST
   value1 |= valueMixed & 0x30;
+  value1 &= 0x1F;
+  trimX = (4096 * 0.34) * pow ( (0.92/0.32)  , ((value1 - 1)/( pow(2,5) -2  )   )  );
     
   Serial.print("value 1 calibrated = ");
   Serial.print(value1);
   Serial.println(" ");
-
-
+  Serial.print("trimX = ");
+  Serial.print(trimX);
+  Serial.println(" ");
+  
   // Return to default setting
   tempVal = readReg(ACCEL_CONFIG);
   tempVal =0;
@@ -89,7 +91,7 @@ void GY_521::selfTestAcc()
 
 GY_521 GY_521::get_accData(GY_521& temp)
 {
-   temp;
+  temp;
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(0x3B); // X high bytes
   Wire.endTransmission(false);
