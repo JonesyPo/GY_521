@@ -119,6 +119,6 @@ GY_521 GY_521::get_accData(GY_521& temp)
   temp.xData = Wire.read() <<8 | Wire.read();  
   temp.yData = Wire.read() <<8 | Wire.read();
   temp.zData = Wire.read() <<8 | Wire.read();
-  delay(500);
+  delay(100);
   return temp;
 }
