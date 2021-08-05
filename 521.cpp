@@ -34,20 +34,45 @@ void GY_521::print_accData(GY_521 &data)
   Serial.print(data.zData);
   Serial.println(" ");
 
-  if(data.xData > 10000)
-    analogWrite(ledRed, 100);
-  else
+  if(data.xData < 500)
     analogWrite(ledRed, 0);
-
-  if(data.yData >10000)
-    analogWrite(ledBlue, 100);
-  else
+  else if(data.xData >= 500 && data.xData < 3000)
+      analogWrite(ledRed, 50);
+  else if(data.xData >= 3000 && data.xData < 6000)
+      analogWrite(ledRed, 100);
+  else if(data.xData >= 6000 && data.xData < 9000)
+      analogWrite(ledRed, 150);
+  else if(data.xData >= 9000 && data.xData < 12000)
+      analogWrite(ledRed, 200);
+  else 
+      analogWrite(ledRed, 250);
+ 
+  if(data.yData < 100)
     analogWrite(ledBlue, 0);
-
-  if(data.zData >10000)
-    analogWrite(ledGreen, 100);
+  else if(data.yData >= 500 && data.yData < 3000)
+      analogWrite(ledBlue, 50);
+  else if(data.yData >= 3000 && data.yData < 6000)
+      analogWrite(ledBlue, 100);
+  else if(data.yData >= 6000 && data.yData < 9000)
+      analogWrite(ledBlue, 150);
+  else if(data.yData >= 9000 && data.yData < 19000)
+      analogWrite(ledBlue, 200);
   else
+      analogWrite(ledBlue, 0);
+
+  if(data.zData < 500)
     analogWrite(ledGreen, 0);
+  else if(data.zData >= 500 && data.zData < 3000)
+      analogWrite(ledGreen, 50);
+  else if(data.zData >= 3000 && data.zData < 6000)
+      analogWrite(ledGreen, 100);
+  else if(data.zData >= 6000 && data.zData < 9000)
+      analogWrite(ledGreen, 150);
+  else if(data.zData >= 9000 && data.zData < 12000)
+      analogWrite(ledGreen, 200);
+  else 
+      analogWrite(ledGreen, 250);
+
 }
 
 uint8_t readReg(uint8_t reg)
@@ -119,6 +144,6 @@ GY_521 GY_521::get_accData(GY_521& temp)
   temp.xData = Wire.read() <<8 | Wire.read();  
   temp.yData = Wire.read() <<8 | Wire.read();
   temp.zData = Wire.read() <<8 | Wire.read();
-  delay(100);
+  delay(300);
   return temp;
 }

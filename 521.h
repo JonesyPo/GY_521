@@ -1,4 +1,3 @@
-
 #include <Arduino.h>
 class GY_521 {
   private:
@@ -12,7 +11,6 @@ class GY_521 {
     void writeToReg();
     void selfTestAcc();
 };
-
 
 void writeReg(uint8_t reg, uint8_t val);
 
