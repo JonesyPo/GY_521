@@ -18,4 +18,5 @@ void setup() {
 void loop() {
   reading.get_accData(reading);
   reading.print_accData(reading);
+  reading.getTempData(reading);
 }

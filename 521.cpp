@@ -3,6 +3,7 @@
 
 
 int SLV_ADDR = 0x68;
+uint8_t TEMP_MSR = 0x41;
 uint8_t ACCEL_CONFIG = 0x1C;
 
 int ledRed = 6;
@@ -45,18 +46,18 @@ void GY_521::print_accData(GY_521 &data)
   else if(data.xData >= 9000 && data.xData < 12000)
       analogWrite(ledRed, 200);
   else 
-      analogWrite(ledRed, 250);
+      analogWrite(ledRed, 400);
  
   if(data.yData < 100)
     analogWrite(ledBlue, 0);
   else if(data.yData >= 500 && data.yData < 3000)
-      analogWrite(ledBlue, 50);
+      analogWrite(ledBlue, 25);
   else if(data.yData >= 3000 && data.yData < 6000)
-      analogWrite(ledBlue, 100);
+      analogWrite(ledBlue, 75);
   else if(data.yData >= 6000 && data.yData < 9000)
-      analogWrite(ledBlue, 150);
+      analogWrite(ledBlue, 100);
   else if(data.yData >= 9000 && data.yData < 19000)
-      analogWrite(ledBlue, 200);
+      analogWrite(ledBlue, 150);
   else
       analogWrite(ledBlue, 0);
 
@@ -146,4 +147,18 @@ GY_521 GY_521::get_accData(GY_521& temp)
   temp.zData = Wire.read() <<8 | Wire.read();
   delay(300);
   return temp;
+}
+
+GY_521 GY_521::getTempData(GY_521& temp)
+{
+  temp;
+  temp.tempMsr = readReg(TEMP_MSR);
+  temp.tempMsr =  (temp.tempMsr << 8) | readReg(TEMP_MSR+1);
+  temp.tempMsr = (temp.tempMsr/340) + 36.53;
+  temp.tempMsr = (temp.tempMsr *1.8) +32;
+  Serial.print("temp = ");
+  Serial.print(temp.tempMsr);
+  Serial.println(" ");
+  return temp;
+
 }
