@@ -10,6 +10,9 @@ int ledRed = 6;
 int ledBlue = 5;
 int ledGreen = 3;
 
+int ledTempR = 9;
+int ledTempG = 10;
+int ledTempB = 11;
 
 void writeReg(uint8_t reg, uint8_t val)
 {
@@ -78,6 +81,7 @@ void GY_521::print_accData(GY_521 &data)
 
 uint8_t readReg(uint8_t reg)
 {
+
   uint8_t tempReadVal = 0;
   Wire.beginTransmission(SLV_ADDR);
   Wire.write(reg);
@@ -159,6 +163,29 @@ GY_521 GY_521::getTempData(GY_521& temp)
   Serial.print("temp = ");
   Serial.print(temp.tempMsr);
   Serial.println(" ");
+  if(temp.tempMsr >= 68 && temp.tempMsr <= 74)
+  {
+    analogWrite(ledTempG, 100);
+    analogWrite(ledTempB, 75);
+  }
+  else if (temp.tempMsr >= 60 && temp.tempMsr < 68)
+  {
+    analogWrite(ledTempG, 75);
+    analogWrite(ledTempB, 100);
+  }
+  else if(temp.tempMsr > 74 && temp.tempMsr <= 80)
+  {
+    analogWrite(ledTempR, 75);
+    analogWrite(ledTempG, 80);
+  }
+    else if(temp.tempMsr > 80)
+  {
+    analogWrite(ledTempR, 100);
+  }
+  else if(temp.tempMsr < 60)
+  {
+    analogWrite(ledTempB, 100);
+  }
   return temp;
 
 }
